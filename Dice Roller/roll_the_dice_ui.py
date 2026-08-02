@@ -13,9 +13,28 @@ def draw_die_face(value: int) -> None:
     if die_canvas is None:
         return
     die_canvas.delete("all")
-    die_canvas.create_rectangle(10, 10, 150, 150, width=3, outline="#0f172a", fill="#f8fafc")
+    die_canvas.update_idletasks()
+
+    width = max(1, die_canvas.winfo_width())
+    height = max(1, die_canvas.winfo_height())
+    die_size = min(118, width - 40, height - 40)
+    if die_size < 70:
+        die_size = 70
+
+    center_x = width / 2
+    center_y = height / 2
+    x0 = center_x - die_size / 2
+    y0 = center_y - die_size / 2
+    x1 = x0 + die_size
+    y1 = y0 + die_size
+
+    die_canvas.create_rectangle(x0 + 4, y0 + 4, x1 - 4, y1 - 4, width=3, outline="#0f172a", fill="#f8fafc")
+    radius = max(4, int(die_size * 0.08))
+
     for x, y in get_die_face_positions(value):
-        die_canvas.create_oval(x - 6, y - 6, x + 6, y + 6, fill="#0f172a", outline="#0f172a")
+        px = center_x - (die_size / 2) + (x / 80) * die_size
+        py = center_y - (die_size / 2) + (y / 80) * die_size
+        die_canvas.create_oval(px - radius, py - radius, px + radius, py + radius, fill="#0f172a", outline="#0f172a")
 
 
 def on_roll() -> None:
@@ -60,10 +79,10 @@ def build_ui(root: tk.Tk) -> None:
     subtitle_label.grid(row=1, column=0, columnspan=2, sticky="w", pady=(6, 18))
 
     die_panel = tk.LabelFrame(frame, text="Die Preview", font=("Segoe UI", 11, "bold"), bg="#111827", fg="#a5b4fc", bd=2, relief=tk.GROOVE)
-    die_panel.grid(row=2, column=1, rowspan=4, sticky="nsew", padx=(16, 0), pady=(0, 0))
+    die_panel.grid(row=2, column=1, rowspan=4, sticky="nsew", padx=(20, 0), pady=(0, 0))
 
-    die_canvas = tk.Canvas(die_panel, width=160, height=160, bg="#f8fafc", highlightthickness=0)
-    die_canvas.pack(fill=tk.BOTH, expand=True, padx=12, pady=12)
+    die_canvas = tk.Canvas(die_panel, width=260, height=260, bg="#f8fafc", highlightthickness=0)
+    die_canvas.pack(fill=tk.BOTH, expand=True, padx=18, pady=18)
 
     label_prompt = tk.Label(frame, text="Number of rolls:", font=("Segoe UI", 12), bg="#111827", fg="#e2e8f0")
     label_prompt.grid(row=2, column=0, sticky="w")
@@ -115,7 +134,7 @@ def build_ui(root: tk.Tk) -> None:
 if __name__ == "__main__":
     root = tk.Tk()
     root.title("Dice Roller")
-    root.geometry("680x420")
+    root.geometry("760x500")
     root.resizable(False, False)
     root.configure(bg="#0b1120")
     build_ui(root)
